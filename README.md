@@ -63,24 +63,30 @@ This repository contains a BookStack-backed KB indexing pipeline, hybrid retriev
   ```
 
 ## 4) Configure environment
-- Copy .env.example to .env and fill in:
-  - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
-  - OPENAI_API_KEY
-  - EMBEDDING_MODEL (default is fine)
+- Copy .env.example to .env 
+```bash
+cp .evn.example .env
+vim .env
+```
+
+and fill in:
+  - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, and OPENAI_API_KEY
+
+The rest of the defaults should be fine
+  - EMBEDDING_MODEL (if you change model, there may need to be sql changes) 
   - VECTOR_EXPR if your MySQL build supports VECTOR columns
-  - CANDIDATE_LIMIT to cap rows scored in app (default is fine)
+  - CANDIDATE_LIMIT to cap rows scored in app 
   - LLM_MODEL (default: gpt-5.2)
   - SERVICE_PORT (default: 3000)
 
 ## 5) Run embeddings (index BookStack pages)
 - Default behavior only re-embeds changed pages.
-- Full overwrite:
   ```bash
-  node scripts/index_kb.js --overwrite
+  node scripts/index_kb.js
   ```
-- Limit pages:
+- Limit pages (good for first run to make sure it is working right):
   ```bash
-  node scripts/index_kb.js --limit 50
+  node scripts/index_kb.js --limit 5
   ```
 - Single page:
   ```bash
@@ -89,6 +95,10 @@ This repository contains a BookStack-backed KB indexing pipeline, hybrid retriev
 - Since timestamp:
   ```bash
   node scripts/index_kb.js --since "2026-01-01 00:00:00"
+  ```
+- Full overwrite:
+  ```bash
+  node scripts/index_kb.js --overwrite
   ```
 
 ### 5b) Tag KB pages for better filtering (optional but recommended)
