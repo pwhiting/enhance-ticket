@@ -149,7 +149,9 @@ This repository contains a BookStack-backed KB indexing pipeline, hybrid retriev
   ```bash
   curl -s http://localhost:3000/api/enrich-ticket \
     -H 'Content-Type: application/json' \
-    -d '{"ticket_id":"TCK-100293","ticket_text":"User cannot login after password reset","product":null}'
+    -d '{"ticket_id":"TCK-100293",
+         "ticket_text":"User cannot login after password reset",
+         "product":null}'
   ```
 
 ## 10) Test OpenAI connectivity
