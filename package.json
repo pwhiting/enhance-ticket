@@ -1,0 +1,18 @@
+{
+  "name": "bookstack-vector-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "index:kb": "node scripts/index_kb.js",
+    "search:kb": "node scripts/vector_search.js",
+    "serve:enrich": "node scripts/ticket_enrichment_service.js",
+    "ping:openai": "node scripts/openai_ping.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0",
+    "openai": "^4.57.0"
+  }
+}

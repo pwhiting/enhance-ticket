@@ -1,0 +1,71 @@
+Steps to rebuild the vector search setup
+
+1) Prereqs
+- MySQL 8.0.44 (community builds do not include VECTOR support by default).
+- Node.js 18+.
+
+2) Create schema
+- Run: mysql -u bs_user -p bookstack < sql/vector_schema.sql
+- This schema stores embeddings as JSON for app-layer vector search.
+- If you want in-DB vector search, install a MySQL build with VECTOR support
+  and change the embedding column + VECTOR_EXPR accordingly.
+
+3) Install Node dependencies
+- Run: npm install
+
+4) Configure environment
+- Copy .env.example to .env and fill in:
+  - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+  - OPENAI_API_KEY
+  - EMBEDDING_MODEL (match your vector dimension)
+  - VECTOR_EXPR if your MySQL build supports VECTOR columns
+  - CANDIDATE_LIMIT to cap rows scored in app
+  - LLM_MODEL (default: gpt-5.2)
+  - SERVICE_PORT (default: 3000)
+
+5) Run embeddings (index BookStack pages)
+- Default behavior only re-embeds changed pages.
+- Full overwrite: node scripts/index_kb.js --overwrite
+- Limit pages: node scripts/index_kb.js --limit 50
+- Single page: node scripts/index_kb.js --page-id 123
+- Since timestamp: node scripts/index_kb.js --since "2026-01-01 00:00:00"
+
+5b) Tag KB pages for better filtering (optional but recommended)
+- In BookStack UI, add page tags:
+  - audience=agent
+  - status=active
+  - product=<ProductName>
+- These are used by the search script filters (--audience/--status/--product).
+- For bulk tagging, see: sql/tag_helpers.sql
+
+6) Test vector search
+- Example:
+  - npm run search:kb -- --text "User cannot login after password reset" --limit 5
+- With product filter:
+  - npm run search:kb -- --text "VPN setup" --product "AcmeVPN"
+- Increase candidates if results look thin:
+  - npm run search:kb -- --text "VPN setup" --candidate-limit 5000
+- Hybrid keyword prefilter (default on):
+  - npm run search:kb -- --text "password reset error 401" --keyword-limit 200 --term-limit 25
+- Disable keyword prefilter:
+  - npm run search:kb -- --text "password reset error 401" --disable-keywords
+
+7) Validate counts
+- Check chunk count: SELECT COUNT(*) FROM kb_chunk;
+- Spot-check a page: SELECT * FROM kb_chunk WHERE page_id=123 LIMIT 3;
+
+8) Iteration notes
+- Re-run index after KB content updates.
+- If you change EMBEDDING_MODEL dimensionality, reindex embeddings.
+
+9) Run the enrichment service
+- Start: npm run serve:enrich
+- Enable debug logs: DEBUG_ENRICH=1 npm run serve:enrich
+- UI: http://<server-ip>:3000/ui
+- Example request:
+  curl -s http://localhost:3000/api/enrich-ticket \\
+    -H 'Content-Type: application/json' \\
+    -d '{\"ticket_id\":\"TCK-100293\",\"ticket_text\":\"User cannot login after password reset\",\"product\":null}'
+
+10) Test OpenAI connectivity
+- Run: npm run ping:openai
