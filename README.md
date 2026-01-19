@@ -66,9 +66,9 @@ This repository contains a BookStack-backed KB indexing pipeline, hybrid retriev
 - Copy .env.example to .env and fill in:
   - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
   - OPENAI_API_KEY
-  - EMBEDDING_MODEL (match your vector dimension)
+  - EMBEDDING_MODEL (default is fine)
   - VECTOR_EXPR if your MySQL build supports VECTOR columns
-  - CANDIDATE_LIMIT to cap rows scored in app
+  - CANDIDATE_LIMIT to cap rows scored in app (default is fine)
   - LLM_MODEL (default: gpt-5.2)
   - SERVICE_PORT (default: 3000)
 
@@ -154,8 +154,3 @@ This repository contains a BookStack-backed KB indexing pipeline, hybrid retriev
          "product":null}'
   ```
 
-## 10) Test OpenAI connectivity
-- Run:
-  ```bash
-  npm run ping:openai
-  ```
